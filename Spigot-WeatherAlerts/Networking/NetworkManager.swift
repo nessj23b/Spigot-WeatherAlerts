@@ -12,6 +12,8 @@ final class NetworkManager {
     static let shared = NetworkManager()
                
     private let weatherURL = "https://api.alltheapps.org/weather/v3/allActiveAlerts?apiKey=FRITZ_TEMP"
+    
+    var downloadedImages = [IndexPath: UIImage]()
         
     private init() {}
     

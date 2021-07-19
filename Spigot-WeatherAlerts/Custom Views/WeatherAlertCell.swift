@@ -13,9 +13,8 @@ class WeatherAlertCell: UICollectionViewCell {
     private var randomImageURL = "https://picsum.photos/200"
     
     let placeHolderImage = UIImage(named: "placeholderImage")
-    var imageID = 0
     
-    var downloadedImages = [String: UIImage]()
+    var downloadedImages = [IndexPath: UIImage]()
     
     // data displayed in each cell
     let event = UILabel()
@@ -25,6 +24,8 @@ class WeatherAlertCell: UICollectionViewCell {
     var randomImageView = UIImageView()
     
     let monthDayYearFormatter = DateFormatter()
+    
+    var cellIndexPath = IndexPath()
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -44,8 +45,8 @@ class WeatherAlertCell: UICollectionViewCell {
     
     
     // assigning values to variables
-    func set(weatherAlert: WeatherAlert) {
-        downloadImage(from: randomImageURL)
+    func set(weatherAlert: WeatherAlert, indexPath: IndexPath) {
+        downloadImage(from: randomImageURL, for: indexPath)
         if randomImageView.image == nil {
             randomImageView.image = placeHolderImage
         }
@@ -123,21 +124,23 @@ class WeatherAlertCell: UICollectionViewCell {
     }
     
     
-    func downloadImage(from urlString: String) {
+    
+    // ***** NETWORKING *****
+    func downloadImage(from urlString: String, for cellNumber: IndexPath) {
+                
+        // ***** doesn't seem like the image storing is working... *****
         
-        // setting up key for cache lookup
-        var cacheKey = "\(imageID)"
-        
-        if downloadedImages.keys.contains(cacheKey) {
-            self.randomImageView.image = downloadedImages[cacheKey]
-            print(downloadedImages[cacheKey] ?? "couldn't print it :(")
+        // look to see if the image we need has been downloaded previously
+        if downloadedImages.keys.contains(cellNumber) {
+            // if it has, use it for our image
+            self.randomImageView.image = downloadedImages[cellNumber]
             return
         }
-        
+                
         // check for good url
         guard let url = URL(string: urlString) else { return }
         
-        // GET request for image
+        // GET request for a new image
         let task = URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
             guard let self = self else { return }
             
@@ -151,15 +154,12 @@ class WeatherAlertCell: UICollectionViewCell {
             guard let image = UIImage(data: data) else { return }
             
             // put newly downloaded image into cache using our newly generated cacheKey (line 47)
-            self.downloadedImages[cacheKey] = image
+            self.downloadedImages[cellNumber] = image
             
             // update UI on main thread
             DispatchQueue.main.async {
                 self.randomImageView.image = image
             }
-            
-            // we need to make a new ID for the new image we are going to download
-            cacheKey = "\(self.imageID += 1)"
         }
         
         task.resume()

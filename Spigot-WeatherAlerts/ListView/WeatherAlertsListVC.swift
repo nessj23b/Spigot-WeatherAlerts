@@ -33,17 +33,6 @@ class WeatherAlertsListVC: UIViewController, UICollectionViewDataSource, UIColle
     }
 
     
-    // customizing nav bar
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        navigationController?.setNavigationBarHidden(false, animated: true)
-        navigationController?.navigationBar.tintColor = UIColor(named: "tintColor")
-        let backItem = UIBarButtonItem()
-        backItem.title = "Weather Alerts"
-        navigationItem.backBarButtonItem = backItem
-    }
-    
-    
     // setup for collection view cell size and spacing
     func configureFlowLayout() {
         layout.sectionInset = UIEdgeInsets(top: 20, left: 20, bottom: 20, right: 20)
@@ -71,8 +60,8 @@ class WeatherAlertsListVC: UIViewController, UICollectionViewDataSource, UIColle
             switch result {
             // if we succeed in our network call...
             case .success(let weatherAlerts):
-                self.weatherAlerts = weatherAlerts
                 DispatchQueue.main.async {
+                    self.weatherAlerts = weatherAlerts
                     self.collectionView.reloadData()
                 }
             // if we fail in our network call...
@@ -109,6 +98,7 @@ class WeatherAlertsListVC: UIViewController, UICollectionViewDataSource, UIColle
         present(navController, animated: true)
     }
     
+    
     // handles size of collectionView
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return weatherAlerts.count
@@ -120,7 +110,12 @@ class WeatherAlertsListVC: UIViewController, UICollectionViewDataSource, UIColle
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: Cells.weatherAlertCell, for: indexPath) as! WeatherAlertCell
         configureCell(cell)
         let weatherAlert = weatherAlerts[indexPath.row]
-        cell.set(weatherAlert: weatherAlert)
+        cell.set(weatherAlert: weatherAlert, indexPath: indexPath)
+        
+        // ***** this (below) line passes AN image to the detail view, but not the selected cell's image *****
+        // ***** and also produces a layout/styling bug on some of the cells in the WAListVC after going to the detailVC and back. *****
+        // ***** when it's commented out, there is no bug, but no image is passed... *****
+        
         //self.randomImageView = cell.randomImageView
         return cell
     }

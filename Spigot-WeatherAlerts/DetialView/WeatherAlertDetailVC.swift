@@ -67,6 +67,7 @@ class WeatherAlertDetailVC: UIViewController {
         checkForInstructions()
         setupStyling()
             
+        // adding things to subviews, stylizing, etc.
         configureScrollView()
         configureContentView()
         configureImage()
@@ -81,6 +82,7 @@ class WeatherAlertDetailVC: UIViewController {
         configureSource()
         configureDescription()
         
+        // setting up AutoLayout constraints
         setScrollViewConstraints()
         setContentViewConstraints()
         setImageConstraints()
@@ -95,6 +97,7 @@ class WeatherAlertDetailVC: UIViewController {
         setSourceConstraints()
         setDescriptionConstraints()
         
+        // allows user to move the image anywhere on the screen
         setDragGesture()
     }
 
@@ -131,7 +134,7 @@ class WeatherAlertDetailVC: UIViewController {
     
     
     
-    // *** GESTURE HANDLERS
+    // ***** GESTURE HANDLERS/ACTIONS *****
     func setDragGesture() {
         let panRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture(_:)))
         randomImageView.addGestureRecognizer(panRecognizer)
